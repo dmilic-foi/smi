@@ -1,15 +1,30 @@
-
-vrijeme1 <- read.delim("./weather1.txt", header=T, sep="\t")
-
 Sys.setlocale("LC_TIME", "Croatian")
+
+# Pripremanje dataseta
+vrijeme1 <- read.delim("./weather1.txt", header=T, sep="\t", na.strings = c(""))
+vrijeme1$T <- as.numeric(sub("," , ".", vrijeme1$T))
+vrijeme1$WS <- as.numeric(sub("," , ".", vrijeme1$WS))
+vrijeme1$NS <- as.numeric(sub("," , ".", vrijeme1$NS))
+vrijeme1$EW <- as.numeric(sub("," , ".", vrijeme1$EW))
+vrijeme1$X.1 <- as.numeric(sub("," , ".", vrijeme1$X.1))
+
 
 # Prebrojava neprazne podatke u svakom stupcu zadanog dataseta
 countData <- function(dataset) {
   count_dataset <- c()
   for (i in 1:ncol(dataset)) {
-    count_dataset[i] <- sum(dataset[i]!='' & !is.na(dataset[i]))
+    count_dataset[i] <- sum(!is.na(dataset[i]))
   }
   return(setNames(count_dataset, names(dataset)))
+}
+
+# Racuna aritmeticku sredinu vrijednosti u stupcima zadanog dataseta
+meanValue <- function(dataset) {
+  mean_dataset <- c()
+  for (i in 2:ncol(dataset)) {
+    mean_dataset[i] <- mean(dataset[[i]], na.rm=TRUE)
+  }
+  return(setNames(mean_dataset, names(dataset)))
 }
 
 godisnjeDobaEnum <- function() {
@@ -58,4 +73,26 @@ count_zima <- countData(vrijeme1_zima)
 count_proljece <- countData(vrijeme1_proljece)
 count_ljeto <- countData(vrijeme1_ljeto)
 count_jesen <- countData(vrijeme1_jesen)
+
+mean_zima <- meanValue(vrijeme1_zima)
+mean_proljece <- meanValue(vrijeme1_proljece)
+mean_ljeto <- meanValue(vrijeme1_ljeto)
+mean_jesen <- meanValue(vrijeme1_jesen)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
