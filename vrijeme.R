@@ -22,10 +22,10 @@ getGodisnjeDoba <- function(datum) {
   else if (datum >= zima || datum < proljece) return(godisnjeDobaEnum()$ZIMA)
 }
 
-
 godisnjaDoba <- c()
 for (i in 1:nrow(vrijeme1)) {
-  datum <- as.Date(vrijeme1[i,]$Date, format="%d.%b.%y")
+  datum <- gsub("velj", "veljaca", vrijeme1[i,]$Date)
+  datum <- as.Date(datum, format="%d.%b.%y")
   if (is.na(datum)) {
     godisnjeDoba = NA
   } else {
