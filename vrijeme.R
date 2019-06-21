@@ -1,6 +1,8 @@
 
 vrijeme1 <- read.delim("./weather1.txt", header=T, sep="\t")
 
+Sys.setlocale("LC_TIME", "Croatian")
+
 godisnjeDobaEnum <- function() {
   list(ZIMA=0, PROLJECE=1, LJETO=2, JESEN=3)
 }
@@ -19,3 +21,17 @@ getGodisnjeDoba <- function(datum) {
   else if (datum >= jesen && datum < zima) return(godisnjeDobaEnum()$JESEN)
   else if (datum >= zima || datum < proljece) return(godisnjeDobaEnum()$ZIMA)
 }
+
+
+godisnjaDoba <- c()
+for (i in 1:nrow(vrijeme1)) {
+  datum <- as.Date(vrijeme1[i,]$Date, format="%d.%b.%y")
+  if (is.na(datum)) {
+    godisnjeDoba = NA
+  } else {
+    godisnjeDoba = getGodisnjeDoba(datum)
+  }
+  godisnjaDoba[i] <- godisnjeDoba
+}
+
+vrijeme1$god_doba <- godisnjaDoba
