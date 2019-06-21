@@ -27,6 +27,29 @@ meanValue <- function(dataset) {
   return(setNames(mean_dataset, names(dataset)))
 }
 
+# Racuna medijan vrijednosti u stupcima zadanog dataseta
+medianValue <- function(dataset) {
+  median_dataset <- c()
+  for (i in 2:ncol(dataset)) {
+    median_dataset[i] <- median(dataset[[i]], na.rm=TRUE)
+  }
+  return(setNames(median_dataset, names(dataset)))
+}
+
+# Racuna standardnu devijaciju vrijednosti u stupcima zadanog dataseta
+standardDeviation <- function(dataset) {
+  deviation_dataset <- c()
+  for (i in 2:ncol(dataset)) {
+    deviation_dataset[i] <- sd(dataset[[i]], na.rm=TRUE)
+  }
+  return(setNames(deviation_dataset, names(dataset)))
+}
+
+# Racuna standardnu devijaciju vrijednosti u stupcima zadanog dataseta
+coefOfVariation <- function(dataset) {
+  return(standardDeviation(dataset)/meanValue(dataset))
+}
+
 godisnjeDobaEnum <- function() {
   list(ZIMA=0, PROLJECE=1, LJETO=2, JESEN=3)
 }
@@ -74,17 +97,29 @@ count_proljece <- countData(vrijeme1_proljece)
 count_ljeto <- countData(vrijeme1_ljeto)
 count_jesen <- countData(vrijeme1_jesen)
 
+# Aritmeticke sredine podataka za svako godisnje doba
 mean_zima <- meanValue(vrijeme1_zima)
 mean_proljece <- meanValue(vrijeme1_proljece)
 mean_ljeto <- meanValue(vrijeme1_ljeto)
 mean_jesen <- meanValue(vrijeme1_jesen)
 
+# Medijani podataka za svako godisnje doba
+median_zima <- medianValue(vrijeme1_zima)
+median_proljece <- medianValue(vrijeme1_proljece)
+median_ljeto <- medianValue(vrijeme1_ljeto)
+median_jesen <- medianValue(vrijeme1_jesen)
 
+# Standardne devijacije podataka za svako godisnje doba
+sd_zima <- standardDeviation(vrijeme1_zima)
+sd_proljece <- standardDeviation(vrijeme1_proljece)
+sd_ljeto <- standardDeviation(vrijeme1_ljeto)
+sd_jesen <- standardDeviation(vrijeme1_jesen)
 
-
-
-
-
+# Koeficijenti varijacije podataka za svako godisnje doba
+variation_zima <- coefOfVariation(vrijeme1_zima)
+variation_proljece <- coefOfVariation(vrijeme1_proljece)
+variation_ljeto <- coefOfVariation(vrijeme1_ljeto)
+variation_jesen <- coefOfVariation(vrijeme1_jesen)
 
 
 
