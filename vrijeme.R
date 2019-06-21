@@ -1,3 +1,4 @@
+
 Sys.setlocale("LC_TIME", "Croatian")
 
 # Pripremanje dataseta
@@ -7,6 +8,8 @@ vrijeme1$WS <- as.numeric(sub("," , ".", vrijeme1$WS))
 vrijeme1$NS <- as.numeric(sub("," , ".", vrijeme1$NS))
 vrijeme1$EW <- as.numeric(sub("," , ".", vrijeme1$EW))
 vrijeme1$X.1 <- as.numeric(sub("," , ".", vrijeme1$X.1))
+vrijeme1$Date <- sub("velj" , "veljaca", vrijeme1$Date)
+vrijeme1$Date <- as.Date(vrijeme1$Date, format="%d.%b.%y")
 
 
 # Prebrojava neprazne podatke u svakom stupcu zadanog dataseta
@@ -45,7 +48,7 @@ standardDeviation <- function(dataset) {
   return(setNames(deviation_dataset, names(dataset)))
 }
 
-# Racuna standardnu devijaciju vrijednosti u stupcima zadanog dataseta
+# Racuna koeficijent varijacije vrijednosti u stupcima zadanog dataseta
 coefOfVariation <- function(dataset) {
   return(standardDeviation(dataset)/meanValue(dataset))
 }
@@ -72,7 +75,7 @@ getGodisnjeDoba <- function(datum) {
 # Izracunava godisnja doba za svaki datum u datasetu
 godisnjaDoba <- c()
 for (i in 1:nrow(vrijeme1)) {
-  datum <- gsub("velj", "veljaca", vrijeme1[i,]$Date)
+  datum <- vrijeme1[i,]$Date
   datum <- as.Date(datum, format="%d.%b.%y")
   if (is.na(datum)) {
     godisnjeDoba = NA
@@ -122,6 +125,21 @@ variation_ljeto <- coefOfVariation(vrijeme1_ljeto)
 variation_jesen <- coefOfVariation(vrijeme1_jesen)
 
 
+plot(vrijeme1$Date, vrijeme1$T, type="l", xlab="Mjesec", ylab="Temperatura", col="red", xaxt="n")
+axis.Date(1, at=seq(vrijeme1$Date[2], tail(vrijeme1$Date, n=1), by="1 mon"), format="%m-%Y")
+
+plot(vrijeme1$Date, vrijeme1$H, type="l", xlab="Mjesec", ylab="Vlaga zraka", col="blue", xaxt="n")
+axis.Date(1, at=seq(vrijeme1$Date[2], tail(vrijeme1$Date, n=1), by="1 mon"), format="%m-%Y")
+
+plot(vrijeme1$Date, vrijeme1$WS, type="l", xlab="Mjesec", ylab="Brzina vjetra", col="blue", xaxt="n")
+axis.Date(1, at=seq(vrijeme1$Date[2], tail(vrijeme1$Date, n=1), by="1 mon"), format="%m-%Y")
+
+plot(vrijeme1$Date, vrijeme1$WD, type="l", xlab="Mjesec", ylab="Smjer vjetra", col="blue", xaxt="n")
+axis.Date(1, at=seq(vrijeme1$Date[2], tail(vrijeme1$Date, n=1), by="1 mon"), format="%m-%Y")
+
+plot(vrijeme1$Date, vrijeme1$NS, type="l", xlab="Mjesec", ylab="Projekcija smjera vjetra", col="blue", xaxt="n")
+lines(vrijeme1$Date, vrijeme1$EW, col="red")
+axis.Date(1, at=seq(vrijeme1$Date[2], tail(vrijeme1$Date, n=1), by="1 mon"), format="%m-%Y")
 
 
 
