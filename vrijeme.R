@@ -169,4 +169,13 @@ for (var in high_cor_subset) {
   lines(vrijeme1$Date, var, col="red")
 }
 
-
+# Testira normalnost razdiobe Shapiro-Wilkovim testom
+for (var in names(high_cor)) {
+  print(var)
+  var <- vrijeme1[,which(colnames(vrijeme1)==var)]
+  norm <- shapiro.test(vrijeme1$WD)
+  print(norm$p.value)
+  if (norm$p.value < 0.05){
+    print("Distribucija nije normalna")
+  }
+}
