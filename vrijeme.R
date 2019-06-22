@@ -1,4 +1,5 @@
-library('Matrix')
+library('forecast')
+library('fpp')
 
 Sys.setlocale("LC_TIME", "Croatian")
 
@@ -161,6 +162,7 @@ mcor <- cor(vrijeme1[,2:(length(vrijeme1)-1)], use='pairwise')
 
 # Izvlaci podskup iz matrice korelacija koje imaju korelaciju vecu od 0.7 (apsolutno)
 high_cor <- subsetByAbsValueRange(mcor, 0.7, 1)
+high_cor_subset <- vrijeme1[c(names(high_cor))]
 
 # Crta liniju na grafu za svaku varijablu koje imaju visoku korelaciju
 plot(c(as.Date("1999-01-01"),as.Date("2000-09-01")), c(0,400), col="white", type="l", xlab="Mjesec", ylab="", xaxt="n")
@@ -179,3 +181,4 @@ for (var in names(high_cor)) {
     print("Distribucija nije normalna")
   }
 }
+
