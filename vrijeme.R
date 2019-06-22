@@ -1,3 +1,4 @@
+library('Matrix')
 
 Sys.setlocale("LC_TIME", "Croatian")
 
@@ -85,6 +86,20 @@ for (i in 1:nrow(vrijeme1)) {
   godisnjaDoba[i] <- godisnjeDoba
 }
 
+subsetByAbsValueRange <- function(df, minval, maxval) {
+  rows = c()
+  cols = c()
+  for (i in 1:nrow(df)) {
+    for (j in 1:ncol(mcor)) {
+      if (!is.na(df[i,j]) & abs(df[i,j]) >= minval & abs(df[i,j]<maxval)) {
+        rows = c(rows, i)
+        cols = c(cols, j)
+      }
+    }
+  }
+  return(data.frame(df[unique(rows), unique(cols)]))
+}
+
 # Dodaje novu varijablu s godisnjim dobima 
 vrijeme1$god_doba <- godisnjaDoba
 
@@ -141,11 +156,17 @@ plot(vrijeme1$Date, vrijeme1$NS, type="l", xlab="Mjesec", ylab="Projekcija smjer
 lines(vrijeme1$Date, vrijeme1$EW, col="red")
 axis.Date(1, at=seq(vrijeme1$Date[2], tail(vrijeme1$Date, n=1), by="1 mon"), format="%m-%Y")
 
+# Matrica korelacije
+mcor <- cor(vrijeme1[,2:(length(vrijeme1)-1)], use='pairwise')
 
+# Izvlaci podskup iz matrice korelacija koje imaju korelaciju vecu od 0.7 (apsolutno)
+high_cor <- subsetByAbsValueRange(mcor, 0.7, 1)
 
-
-
-
-
+# Crta liniju na grafu za svaku varijablu koje imaju visoku korelaciju
+plot(c(as.Date("1999-01-01"),as.Date("2000-09-01")), c(0,400), col="white", type="l", xlab="Mjesec", ylab="", xaxt="n")
+axis.Date(1, at=seq(vrijeme1$Date[2], tail(vrijeme1$Date, n=1), by="1 mon"), format="%m-%Y")
+for (var in high_cor_subset) {
+  lines(vrijeme1$Date, var, col="red")
+}
 
 
