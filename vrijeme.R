@@ -187,7 +187,7 @@ for (i in 2:7) {
   print(colnames(vrijeme1)[i])
   print("==================")
   mean_var_all <- c(mean_zima[i], mean_proljece[i], mean_ljeto[i], mean_jesen[i])
-  chisq_var <- chisq.test(matrix(c(mean_var_all, rep(mean(mean_var_all),4), ncol=2)))
+  chisq_var <- chisq.test(c(mean_var_all, rep(mean(mean_var_all),4)))
   print(chisq_var)
   if (chisq_var$p.value <0.05) {
     print("Ima razlike po godisnjim dobima")
@@ -217,6 +217,7 @@ if (tt$p.value<0.05){
   print("Postoji razlika po godisnjim dobima")
 }
 
+# Vlaga
 regr<-(lm(H~zima+proljece+ljeto, data=vrijeme_dummy))
 tt <- t.test(regr$coefficients)
 if (tt$p.value<0.05){
@@ -225,6 +226,7 @@ if (tt$p.value<0.05){
   print("Postoji razlika po godisnjim dobima")
 }
 
+# Brzina vjetra
 regr<-(lm(WS~zima+proljece+ljeto, data=vrijeme_dummy))
 tt <- t.test(regr$coefficients)
 if (tt$p.value<0.05){
@@ -233,6 +235,7 @@ if (tt$p.value<0.05){
   print("Postoji razlika po godisnjim dobima")
 }
 
+# Smjer vjetra
 regr<-(lm(WD~zima+proljece+ljeto, data=vrijeme_dummy))
 tt <- t.test(regr$coefficients)
 if (tt$p.value<0.05){
@@ -241,6 +244,7 @@ if (tt$p.value<0.05){
   print("Postoji razlika po godisnjim dobima")
 }
 
+# Projekcija S-J
 regr<-(lm(NS~zima+proljece+ljeto, data=vrijeme_dummy))
 tt <- t.test(regr$coefficients)
 if (tt$p.value<0.05){
@@ -249,6 +253,7 @@ if (tt$p.value<0.05){
   print("Postoji razlika po godisnjim dobima")
 }
 
+# Projekcija I-Z
 regr<-(lm(EW~zima+proljece+ljeto, data=vrijeme_dummy))
 tt <- t.test(regr$coefficients)
 if (tt$p.value<0.05){
@@ -258,9 +263,70 @@ if (tt$p.value<0.05){
 }
 
 
+mean_zima1999 <- meanValue(vrijeme1[vrijeme1$god_doba==0 & format(vrijeme1$Date, "%Y")=="1999",])
+proljece1999 <- meanValue(vrijeme1[vrijeme1$god_doba==1 & format(vrijeme1$Date, "%Y")=="1999",])
+ljeto1999 <- meanValue(vrijeme1[vrijeme1$god_doba==2 & format(vrijeme1$Date, "%Y")=="1999",])
+jesen1999 <- meanValue(vrijeme1[vrijeme1$god_doba==3 & format(vrijeme1$Date, "%Y")=="1999",])
+
+mean_zima2000 <- meanValue(vrijeme1[vrijeme1$god_doba==0 & format(vrijeme1$Date, "%Y")=="2000",])
+mean_proljece2000 <- meanValue(vrijeme1[vrijeme1$god_doba==1 & format(vrijeme1$Date, "%Y")=="2000",])
+mean_ljeto2000 <- meanValue(vrijeme1[vrijeme1$god_doba==2 & format(vrijeme1$Date, "%Y")=="2000",])
+mean_jesen2000 <- meanValue(vrijeme1[vrijeme1$god_doba==3 & format(vrijeme1$Date, "%Y")=="2000",])
 
 
+# Zima
+for (i in 2:7) {
+  print(colnames(vrijeme1)[i])
+  print("==================")
+  mean_var_all <- c(mean_zima1999[i], mean_zima2000[i])
+  chisq_var <- chisq.test(c(mean_var_all, rep(mean(mean_var_all),2)))
+  print(chisq_var)
+  if (chisq_var$p.value <0.05) {
+    print("Ima razlike po godinama")
+  } else {
+    print("Nema razlike po godinama")
+  }
+  print("================")
+  print("")
+  print("")
+}
 
+# Proljece
+for (i in 2:7) {
+  print(colnames(vrijeme1)[i])
+  print("==================")
+  mean_var_all <- c(mean_proljece1999[i], mean_proljece2000[i])
+  chisq_var <- chisq.test(c(mean_var_all, rep(mean(mean_var_all),2)))
+  print(chisq_var)
+  if (chisq_var$p.value <0.05) {
+    print("Ima razlike po godinama")
+  } else {
+    print("Nema razlike po godinama")
+  }
+  print("================")
+  print("")
+  print("")
+}
+
+# Ljeto
+for (i in 2:7) {
+  print(colnames(vrijeme1)[i])
+  print("==================")
+  mean_var_all <- c(mean_ljeto1999[i], mean_ljeto2000[i])
+  chisq_var <- chisq.test(c(mean_var_all, rep(mean(mean_var_all),2)))
+  print(chisq_var)
+  if (chisq_var$p.value <0.05) {
+    print("Ima razlike po godinama")
+  } else {
+    print("Nema razlike po godinama")
+  }
+  print("================")
+  print("")
+  print("")
+}
+
+# Jesen
+# Nema podataka za 2000 godinu
 
 
 
