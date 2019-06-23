@@ -1,5 +1,3 @@
-library('forecast')
-library('fpp')
 
 Sys.setlocale("LC_TIME", "Croatian")
 
@@ -181,4 +179,92 @@ for (var in names(high_cor)) {
     print("Distribucija nije normalna")
   }
 }
+
+# Usporeduje postoji li signifikantrna razlika u prosjecnoj temperaturi sa pojedino godisnje doba u odnosu na prosjecnu temperaturu cijele godine
+# H0 - Prosjecna temperatura je konstantrna tijekom cijele godine
+# H1 - Prosjecna temperatura nije konstantna tijekom cjele godine
+for (i in 2:7) {
+  print(colnames(vrijeme1)[i])
+  print("==================")
+  mean_var_all <- c(mean_zima[i], mean_proljece[i], mean_ljeto[i], mean_jesen[i])
+  chisq_var <- chisq.test(matrix(c(mean_var_all, rep(mean(mean_var_all),4), ncol=2)))
+  print(chisq_var)
+  if (chisq_var$p.value <0.05) {
+    print("Ima razlike po godisnjim dobima")
+  } else {
+    print("Nema razlike po godisnjim dobima")
+  }
+  print("================")
+  print("")
+  print("")
+}
+
+library('dummies')
+vrijeme_dummy <- cbind(vrijeme1,dummy(vrijeme1$god_doba, sep="_"))
+colnames(vrijeme_dummy)[colnames(vrijeme_dummy)=="vrijeme1_0"] <- "zima"
+colnames(vrijeme_dummy)[colnames(vrijeme_dummy)=="vrijeme1_1"] <- "proljece"
+colnames(vrijeme_dummy)[colnames(vrijeme_dummy)=="vrijeme1_2"] <- "ljeto"
+colnames(vrijeme_dummy)[colnames(vrijeme_dummy)=="vrijeme1_3"] <- "jesen"
+
+# Testiranje postoji li signifikantna razlika u koeficijentima dummy varijabli
+# H0 - Postoji razlika imedu koeficijenata dummyvarijabli
+# H1 - Ne postijo razlikau koeficijentima
+regr<-(lm(T~zima+proljece+ljeto, data=vrijeme_dummy))
+tt <- t.test(regr$coefficients)
+if (tt$p.value<0.05){
+  print("Nema razlike po godisnjim dobima")
+} else {
+  print("Postoji razlika po godisnjim dobima")
+}
+
+regr<-(lm(H~zima+proljece+ljeto, data=vrijeme_dummy))
+tt <- t.test(regr$coefficients)
+if (tt$p.value<0.05){
+  print("Nema razlike po godisnjim dobima")
+} else {
+  print("Postoji razlika po godisnjim dobima")
+}
+
+regr<-(lm(WS~zima+proljece+ljeto, data=vrijeme_dummy))
+tt <- t.test(regr$coefficients)
+if (tt$p.value<0.05){
+  print("Nema razlike po godisnjim dobima")
+} else {
+  print("Postoji razlika po godisnjim dobima")
+}
+
+regr<-(lm(WD~zima+proljece+ljeto, data=vrijeme_dummy))
+tt <- t.test(regr$coefficients)
+if (tt$p.value<0.05){
+  print("Nema razlike po godisnjim dobima")
+} else {
+  print("Postoji razlika po godisnjim dobima")
+}
+
+regr<-(lm(NS~zima+proljece+ljeto, data=vrijeme_dummy))
+tt <- t.test(regr$coefficients)
+if (tt$p.value<0.05){
+  print("Nema razlike po godisnjim dobima")
+} else {
+  print("Postoji razlika po godisnjim dobima")
+}
+
+regr<-(lm(EW~zima+proljece+ljeto, data=vrijeme_dummy))
+tt <- t.test(regr$coefficients)
+if (tt$p.value<0.05){
+  print("Nema razlike po godisnjim dobima")
+} else {
+  print("Postoji razlika po godisnjim dobima")
+}
+
+
+
+
+
+
+
+
+
+
+
 
