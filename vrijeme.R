@@ -264,9 +264,9 @@ if (tt$p.value<0.05){
 
 
 mean_zima1999 <- meanValue(vrijeme1[vrijeme1$god_doba==0 & format(vrijeme1$Date, "%Y")=="1999",])
-proljece1999 <- meanValue(vrijeme1[vrijeme1$god_doba==1 & format(vrijeme1$Date, "%Y")=="1999",])
-ljeto1999 <- meanValue(vrijeme1[vrijeme1$god_doba==2 & format(vrijeme1$Date, "%Y")=="1999",])
-jesen1999 <- meanValue(vrijeme1[vrijeme1$god_doba==3 & format(vrijeme1$Date, "%Y")=="1999",])
+mean_proljece1999 <- meanValue(vrijeme1[vrijeme1$god_doba==1 & format(vrijeme1$Date, "%Y")=="1999",])
+mean_ljeto1999 <- meanValue(vrijeme1[vrijeme1$god_doba==2 & format(vrijeme1$Date, "%Y")=="1999",])
+mean_jesen1999 <- meanValue(vrijeme1[vrijeme1$god_doba==3 & format(vrijeme1$Date, "%Y")=="1999",])
 
 mean_zima2000 <- meanValue(vrijeme1[vrijeme1$god_doba==0 & format(vrijeme1$Date, "%Y")=="2000",])
 mean_proljece2000 <- meanValue(vrijeme1[vrijeme1$god_doba==1 & format(vrijeme1$Date, "%Y")=="2000",])
