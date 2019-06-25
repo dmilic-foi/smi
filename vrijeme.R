@@ -7,9 +7,9 @@ vrijeme1$T <- as.numeric(sub("," , ".", vrijeme1$T))
 vrijeme1$WS <- as.numeric(sub("," , ".", vrijeme1$WS))
 vrijeme1$NS <- as.numeric(sub("," , ".", vrijeme1$NS))
 vrijeme1$EW <- as.numeric(sub("," , ".", vrijeme1$EW))
-vrijeme1$X.1 <- as.numeric(sub("," , ".", vrijeme1$X.1))
-vrijeme1$Date <- sub("velj" , "veljaca", vrijeme1$Date)
+vrijeme1$Date <- sub("velj" , "vlj", vrijeme1$Date)
 vrijeme1$Date <- as.Date(vrijeme1$Date, format="%d.%b.%y")
+vrijeme1 <- vrijeme1[1:7]
 
 
 # Prebrojava neprazne podatke u svakom stupcu zadanog dataseta
@@ -299,6 +299,42 @@ cat("======================================\n\n")
 
 
 
+### VRIJEME 4 ###
+# Pripremanje dataseta
+vrijeme4 <- read.delim("./weather4.txt", header=T, sep="\t", na.strings = c(""))
+jan <- vrijeme4[names(vrijeme4)[c(1,3,4,5)]]
+names(jan) <- c("Tmax", "Date", "Time", "TimeNr")
+jan$Mon <- c(rep("jan", nrow(jan)))
+
+feb <- vrijeme4[names(vrijeme4)[7:10]]
+names(feb) <- c("Tmax", "Date", "Time", "TimeNr")
+feb$Mon <- c(rep("feb", nrow(feb)))
+
+jul <- vrijeme4[names(vrijeme4)[12:15]]
+names(jul) <- c("Tmax", "Date", "Time", "TimeNr")
+jul$Mon <- c(rep("jul", nrow(jul)))
+
+vrijeme4 <- merge(jan, feb, all=TRUE)
+vrijeme4 <- merge(vrijeme4, jul, all=TRUE)
+
+vrijeme4 <- na.omit(vrijeme4)
+vrijeme4$Date <- as.Date(vrijeme4$Date, format="%d.%m.%Y")
+vrijeme4 <- vrijeme4[order(vrijeme4$Date),]
+vrijeme4$Tmax <- as.numeric(sub("," , ".", vrijeme4$Tmax))
+vrijeme4$TimeNr <- as.numeric(sub("," , ".", vrijeme4$TimeNr))
+
+anova_vr4 <- aov(TimeNr~Mon, data=vrijeme4)
+cat("ANOVA - TimeNr\n")
+cat("--------\n")
+summary(anova_vr4)
+
+pval <- summary(anova_vr4)[[1]][["Pr(>F)"]][1]
+if (pval < 0.05) {
+    cat("Postoji signifikantna razlika izmedu testiranih mjeseci\n")
+} else {
+    cat("Ne postoji signifikantna razlika izmedu testiranih mjeseci\n")
+}
+cat("======================================\n\n")
 
 
 
