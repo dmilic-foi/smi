@@ -54,7 +54,7 @@ coefOfVariation <- function(dataset) {
 }
 
 godisnjeDobaEnum <- function() {
-  list(ZIMA=0, PROLJECE=1, LJETO=2, JESEN=3)
+  list(ZIMA="0", PROLJECE="1", LJETO="2", JESEN="3")
 }
 
 getGodisnjeDoba <- function(datum) {
@@ -72,19 +72,6 @@ getGodisnjeDoba <- function(datum) {
   else if (datum >= zima | datum < proljece) return(godisnjeDobaEnum()$ZIMA)
 }
 
-# Izracunava godisnja doba za svaki datum u datasetu
-godisnjaDoba <- c()
-for (i in 1:nrow(vrijeme1)) {
-  datum <- vrijeme1[i,]$Date
-  datum <- as.Date(datum, format="%d.%b.%y")
-  if (is.na(datum)) {
-    godisnjeDoba = NA
-  } else {
-    godisnjeDoba = getGodisnjeDoba(datum)
-  }
-  godisnjaDoba[i] <- godisnjeDoba
-}
-
 subsetByAbsValueRange <- function(df, minval, maxval) {
   rows = c()
   cols = c()
@@ -99,6 +86,19 @@ subsetByAbsValueRange <- function(df, minval, maxval) {
   return(data.frame(df[unique(rows), unique(cols)]))
 }
 
+# Izracunava godisnja doba za svaki datum u datasetu
+godisnjaDoba <- c()
+for (i in 1:nrow(vrijeme1)) {
+  datum <- vrijeme1[i,]$Date
+  datum <- as.Date(datum, format="%d.%b.%y")
+  if (is.na(datum)) {
+    godisnjeDoba = NA
+  } else {
+    godisnjeDoba = getGodisnjeDoba(datum)
+  }
+  godisnjaDoba[i] <- godisnjeDoba
+}
+
 # Dodaje novu varijablu s godisnjim dobima 
 vrijeme1$god_doba <- godisnjaDoba
 
@@ -109,35 +109,64 @@ vrijeme1_ljeto = subset(vrijeme1, god_doba==2)[names(vrijeme1) != "god_doba"]
 vrijeme1_jesen = subset(vrijeme1, god_doba==3)[names(vrijeme1) != "god_doba"]
 
 # Prebrojavanje podataka za svako godisnje doba
-count_zima <- countData(vrijeme1_zima)
-count_proljece <- countData(vrijeme1_proljece)
-count_ljeto <- countData(vrijeme1_ljeto)
-count_jesen <- countData(vrijeme1_jesen)
+count <- data.frame(
+    zima = countData(vrijeme1_zima),
+    proljece = countData(vrijeme1_proljece),
+    ljeto = countData(vrijeme1_ljeto),
+    jesen = countData(vrijeme1_jesen)
+)
+cat("Broj podataka po godisnjim dobima\n")
+cat("--------\n")
+print(format(count, digit=2))
+cat("======================================\n\n")
 
 # Aritmeticke sredine podataka za svako godisnje doba
-mean_zima <- meanValue(vrijeme1_zima)
-mean_proljece <- meanValue(vrijeme1_proljece)
-mean_ljeto <- meanValue(vrijeme1_ljeto)
-mean_jesen <- meanValue(vrijeme1_jesen)
+aritmsr <- data.frame(
+    zima = meanValue(vrijeme1_zima),
+    proljece = meanValue(vrijeme1_proljece),
+    ljeto = meanValue(vrijeme1_ljeto),
+    jesen = meanValue(vrijeme1_jesen)
+)
+cat("Aritmeticke sredine podataka po godisnjim dobima\n")
+cat("--------\n")
+print(format(aritmsr, digit=2))
+cat("======================================\n\n")
 
 # Medijani podataka za svako godisnje doba
-median_zima <- medianValue(vrijeme1_zima)
-median_proljece <- medianValue(vrijeme1_proljece)
-median_ljeto <- medianValue(vrijeme1_ljeto)
-median_jesen <- medianValue(vrijeme1_jesen)
+medijan <- data.frame(
+    zima = medianValue(vrijeme1_zima),
+    proljece = medianValue(vrijeme1_proljece),
+    ljeto = medianValue(vrijeme1_ljeto),
+    jesen = medianValue(vrijeme1_jesen)
+)
+cat("Medijani podataka po godisnjim dobima\n")
+cat("--------\n")
+print(format(medijan, digit=2))
+cat("======================================\n\n")
 
 # Standardne devijacije podataka za svako godisnje doba
-sd_zima <- standardDeviation(vrijeme1_zima)
-sd_proljece <- standardDeviation(vrijeme1_proljece)
-sd_ljeto <- standardDeviation(vrijeme1_ljeto)
-sd_jesen <- standardDeviation(vrijeme1_jesen)
+stdev <- data.frame(
+    zima = standardDeviation(vrijeme1_zima),
+    proljece = standardDeviation(vrijeme1_proljece),
+    ljeto = standardDeviation(vrijeme1_ljeto),
+    jesen = standardDeviation(vrijeme1_jesen)
+)
+cat("Standardne devijacije podataka po godisnjim dobima\n")
+cat("--------\n")
+print(format(stdev, digit=2))
+cat("======================================\n\n")
 
 # Koeficijenti varijacije podataka za svako godisnje doba
-variation_zima <- coefOfVariation(vrijeme1_zima)
-variation_proljece <- coefOfVariation(vrijeme1_proljece)
-variation_ljeto <- coefOfVariation(vrijeme1_ljeto)
-variation_jesen <- coefOfVariation(vrijeme1_jesen)
-
+koefvar <- data.frame(
+    zima=coefOfVariation(vrijeme1_zima),
+    proljece=coefOfVariation(vrijeme1_proljece),
+    ljeto=coefOfVariation(vrijeme1_ljeto),
+    jesen=coefOfVariation(vrijeme1_jesen)
+)
+cat("Koeficijenti varijacije podataka po godisnjim dobima\n")
+cat("--------\n")
+print(format(koefvar, digit=2))
+cat("======================================\n\n")
 
 plot(vrijeme1$Date, vrijeme1$T, type="l", xlab="Mjesec", ylab="Temperatura", col="red", xaxt="n")
 axis.Date(1, at=seq(vrijeme1$Date[2], tail(vrijeme1$Date, n=1), by="1 mon"), format="%m-%Y")
@@ -171,163 +200,102 @@ for (var in high_cor_subset) {
 
 # Testira normalnost razdiobe Shapiro-Wilkovim testom
 for (var in names(high_cor)) {
-  print(var)
+  cat(var,"\n")
   var <- vrijeme1[,which(colnames(vrijeme1)==var)]
   norm <- shapiro.test(vrijeme1$WD)
-  print(norm$p.value)
+  cat("p-vrijednost:",norm$p.value, "\n")
   if (norm$p.value < 0.05){
-    print("Distribucija nije normalna")
-  }
-}
-
-# Usporeduje postoji li signifikantrna razlika u prosjecnoj temperaturi sa pojedino godisnje doba u odnosu na prosjecnu temperaturu cijele godine
-# H0 - Prosjecna temperatura je konstantrna tijekom cijele godine
-# H1 - Prosjecna temperatura nije konstantna tijekom cjele godine
-for (i in 2:7) {
-  print(colnames(vrijeme1)[i])
-  print("==================")
-  mean_var_all <- c(mean_zima[i], mean_proljece[i], mean_ljeto[i], mean_jesen[i])
-  chisq_var <- chisq.test(c(mean_var_all, rep(mean(mean_var_all),4)))
-  print(chisq_var)
-  if (chisq_var$p.value <0.05) {
-    print("Ima razlike po godisnjim dobima")
+    cat("Distribucija nije normalna\n")
   } else {
-    print("Nema razlike po godisnjim dobima")
+    cat("Distribucija je normalna\n")
   }
-  print("================")
-  print("")
-  print("")
+  cat("======================================\n\n")
 }
 
-library('dummies')
-vrijeme_dummy <- cbind(vrijeme1,dummy(vrijeme1$god_doba, sep="_"))
-colnames(vrijeme_dummy)[colnames(vrijeme_dummy)=="vrijeme1_0"] <- "zima"
-colnames(vrijeme_dummy)[colnames(vrijeme_dummy)=="vrijeme1_1"] <- "proljece"
-colnames(vrijeme_dummy)[colnames(vrijeme_dummy)=="vrijeme1_2"] <- "ljeto"
-colnames(vrijeme_dummy)[colnames(vrijeme_dummy)=="vrijeme1_3"] <- "jesen"
+# Testira razliku među godišnjim dobima ANOVA testom
+# H0 - aritmetičke sredine za pojedina godišnja doba su iste
+# H1 - barem jedno godišnje doba ima drugačiju aritmetičku sredinu
 
-# Testiranje postoji li signifikantna razlika u koeficijentima dummy varijabli
-# H0 - Postoji razlika imedu koeficijenata dummyvarijabli
-# H1 - Ne postijo razlikau koeficijentima
-regr<-(lm(T~zima+proljece+ljeto, data=vrijeme_dummy))
-tt <- t.test(regr$coefficients)
-if (tt$p.value<0.05){
-  print("Nema razlike po godisnjim dobima")
-} else {
-  print("Postoji razlika po godisnjim dobima")
+# Temperatura
+anova_T <- aov(T~god_doba, data=vrijeme1)
+cat("ANOVA - Temperatura\n")
+cat("--------\n")
+summary(anova_T)
+
+pval <- summary(anova_T)[[1]][["Pr(>F)"]][1]
+if (pval < 0.05) {
+    cat("Postoji signifikantna razlika međugodišnjim dobima\n")
 }
 
 # Vlaga
-regr<-(lm(H~zima+proljece+ljeto, data=vrijeme_dummy))
-tt <- t.test(regr$coefficients)
-if (tt$p.value<0.05){
-  print("Nema razlike po godisnjim dobima")
+anova_H <- aov(H~god_doba, data=vrijeme1)
+cat("ANOVA - Vlaga zraka\n")
+cat("--------\n")
+summary(anova_H)
+
+pval <- summary(anova_H)[[1]][["Pr(>F)"]][1]
+if (pval < 0.05) {
+    cat("Postoji signifikantna razlika medu godisnjim dobima\n")
 } else {
-  print("Postoji razlika po godisnjim dobima")
+    cat("Ne postoji signifikantna razlika medu godisnjim dobima\n")
 }
+cat("======================================\n\n")
 
 # Brzina vjetra
-regr<-(lm(WS~zima+proljece+ljeto, data=vrijeme_dummy))
-tt <- t.test(regr$coefficients)
-if (tt$p.value<0.05){
-  print("Nema razlike po godisnjim dobima")
+anova_WS <- aov(WS~god_doba, data=vrijeme1)
+cat("ANOVA - Brzina vjetra\n")
+cat("--------\n")
+summary(anova_WS)
+
+pval <- summary(anova_WS)[[1]][["Pr(>F)"]][1]
+if (pval < 0.05) {
+    cat("Postoji signifikantna razlika medu godisnjim dobima\n")
 } else {
-  print("Postoji razlika po godisnjim dobima")
+    cat("Ne postoji signifikantna razlika medu godisnjim dobima\n")
 }
+cat("======================================\n\n")
 
 # Smjer vjetra
-regr<-(lm(WD~zima+proljece+ljeto, data=vrijeme_dummy))
-tt <- t.test(regr$coefficients)
-if (tt$p.value<0.05){
-  print("Nema razlike po godisnjim dobima")
+anova_WD <- aov(WD~god_doba, data=vrijeme1)
+cat("ANOVA - Smjer vjetra\n")
+cat("--------\n")
+summary(anova_WD)
+
+pval <- summary(anova_WD)[[1]][["Pr(>F)"]][1]
+if (pval < 0.05) {
+    cat("Postoji signifikantna razlika medu godisnjim dobima\n")
 } else {
-  print("Postoji razlika po godisnjim dobima")
+    cat("Ne postoji signifikantna razlika medu godisnjim dobima\n")
 }
+cat("======================================\n\n")
 
-# Projekcija S-J
-regr<-(lm(NS~zima+proljece+ljeto, data=vrijeme_dummy))
-tt <- t.test(regr$coefficients)
-if (tt$p.value<0.05){
-  print("Nema razlike po godisnjim dobima")
+# Projekcija vjetra S-J
+anova_NS <- aov(NS~god_doba, data=vrijeme1)
+cat("ANOVA - Projekcija S-J\n")
+cat("--------\n")
+summary(anova_NS)
+
+pval <- summary(anova_NS)[[1]][["Pr(>F)"]][1]
+if (pval < 0.05) {
+    cat("Postoji signifikantna razlika medu godisnjim dobima\n")
 } else {
-  print("Postoji razlika po godisnjim dobima")
+    cat("Ne postoji signifikantna razlika medu godisnjim dobima\n")
 }
+cat("======================================\n\n")
 
-# Projekcija I-Z
-regr<-(lm(EW~zima+proljece+ljeto, data=vrijeme_dummy))
-tt <- t.test(regr$coefficients)
-if (tt$p.value<0.05){
-  print("Nema razlike po godisnjim dobima")
+# Projekcija vjetra I-Z 
+anova_EW <- aov(EW~god_doba, data=vrijeme1)
+cat("ANOVA - Projekcija I-Z\n")
+cat("--------\n")
+summary(anova_EW)
+
+pval <- summary(anova_EW)[[1]][["Pr(>F)"]][1]
+if (pval < 0.05) {
+    cat("Postoji signifikantna razlika medu godisnjim dobima\n")
 } else {
-  print("Postoji razlika po godisnjim dobima")
+    cat("Ne postoji signifikantna razlika medu godisnjim dobima\n")
 }
-
-
-mean_zima1999 <- meanValue(vrijeme1[vrijeme1$god_doba==0 & format(vrijeme1$Date, "%Y")=="1999",])
-mean_proljece1999 <- meanValue(vrijeme1[vrijeme1$god_doba==1 & format(vrijeme1$Date, "%Y")=="1999",])
-mean_ljeto1999 <- meanValue(vrijeme1[vrijeme1$god_doba==2 & format(vrijeme1$Date, "%Y")=="1999",])
-mean_jesen1999 <- meanValue(vrijeme1[vrijeme1$god_doba==3 & format(vrijeme1$Date, "%Y")=="1999",])
-
-mean_zima2000 <- meanValue(vrijeme1[vrijeme1$god_doba==0 & format(vrijeme1$Date, "%Y")=="2000",])
-mean_proljece2000 <- meanValue(vrijeme1[vrijeme1$god_doba==1 & format(vrijeme1$Date, "%Y")=="2000",])
-mean_ljeto2000 <- meanValue(vrijeme1[vrijeme1$god_doba==2 & format(vrijeme1$Date, "%Y")=="2000",])
-mean_jesen2000 <- meanValue(vrijeme1[vrijeme1$god_doba==3 & format(vrijeme1$Date, "%Y")=="2000",])
-
-
-# Zima
-for (i in 2:7) {
-  print(colnames(vrijeme1)[i])
-  print("==================")
-  mean_var_all <- c(mean_zima1999[i], mean_zima2000[i])
-  chisq_var <- chisq.test(c(mean_var_all, rep(mean(mean_var_all),2)))
-  print(chisq_var)
-  if (chisq_var$p.value <0.05) {
-    print("Ima razlike po godinama")
-  } else {
-    print("Nema razlike po godinama")
-  }
-  print("================")
-  print("")
-  print("")
-}
-
-# Proljece
-for (i in 2:7) {
-  print(colnames(vrijeme1)[i])
-  print("==================")
-  mean_var_all <- c(mean_proljece1999[i], mean_proljece2000[i])
-  chisq_var <- chisq.test(c(mean_var_all, rep(mean(mean_var_all),2)))
-  print(chisq_var)
-  if (chisq_var$p.value <0.05) {
-    print("Ima razlike po godinama")
-  } else {
-    print("Nema razlike po godinama")
-  }
-  print("================")
-  print("")
-  print("")
-}
-
-# Ljeto
-for (i in 2:7) {
-  print(colnames(vrijeme1)[i])
-  print("==================")
-  mean_var_all <- c(mean_ljeto1999[i], mean_ljeto2000[i])
-  chisq_var <- chisq.test(c(mean_var_all, rep(mean(mean_var_all),2)))
-  print(chisq_var)
-  if (chisq_var$p.value <0.05) {
-    print("Ima razlike po godinama")
-  } else {
-    print("Nema razlike po godinama")
-  }
-  print("================")
-  print("")
-  print("")
-}
-
-# Jesen
-# Nema podataka za 2000 godinu
-
+cat("======================================\n\n")
 
 
 
