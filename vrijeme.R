@@ -11,7 +11,6 @@ vrijeme1$Date <- sub("velj" , "vlj", vrijeme1$Date)
 vrijeme1$Date <- as.Date(vrijeme1$Date, format="%d.%b.%y")
 vrijeme1 <- vrijeme1[1:7]
 
-
 # Prebrojava neprazne podatke u svakom stupcu zadanog dataseta
 countData <- function(dataset) {
   count_dataset <- c()
@@ -55,6 +54,11 @@ coefOfVariation <- function(dataset) {
 
 godisnjeDobaEnum <- function() {
   list(ZIMA="0", PROLJECE="1", LJETO="2", JESEN="3")
+}
+
+# Ekstrahira godinu iz datuma
+getGodina <- function(datum) {
+    return(format(datum, format="%Y"))
 }
 
 getGodisnjeDoba <- function(datum) {
@@ -337,4 +341,53 @@ if (pval < 0.05) {
 cat("======================================\n\n")
 
 
+zima99 <- vrijeme1_zima[getGodina(vrijeme1_zima$Date)=="1999",]
+zima00 <- vrijeme1_zima[getGodina(vrijeme1_zima$Date)=="2000",]
+
+proljece99 <- vrijeme1_proljece[getGodina(vrijeme1_proljece$Date)=="1999",]
+proljece00 <- vrijeme1_proljece[getGodina(vrijeme1_proljece$Date)=="2000",]
+
+ljeto99 <- vrijeme1_ljeto[getGodina(vrijeme1_ljeto$Date)=="1999",]
+ljeto00 <- vrijeme1_ljeto[getGodina(vrijeme1_ljeto$Date)=="2000",]
+
+
+ttest <- data.frame(
+    zima = c( 
+        pvalT = t.test(zima99$T, zima00$T)$p.value,
+        pvalH = t.test(zima99$H, zima00$H)$p.value,
+        pvalWS = t.test(zima99$WS, zima00$WS)$p.value,
+        pvalWD = t.test(zima99$WD, zima00$WD)$p.value,
+        pvalNS = t.test(zima99$NS, zima00$NS)$p.value,
+        pvalEW = t.test(zima99$EW, zima00$EW)$p.value
+    ),
+    proljece = c( 
+        pvalT = t.test(proljece99$T, proljece00$T)$p.value,
+        pvalH = t.test(proljece99$H, proljece00$H)$p.value,
+        pvalWS = t.test(proljece99$WS, proljece00$WS)$p.value,
+        pvalWD = t.test(proljece99$WD, proljece00$WD)$p.value,
+        pvalNS = t.test(proljece99$NS, proljece00$NS)$p.value,
+        pvalEW = t.test(proljece99$EW, proljece00$EW)$p.value
+    ),
+    ljeto = c( 
+        pvalT = t.test(ljeto99$T, ljeto00$T)$p.value,
+        pvalH = t.test(ljeto99$H, ljeto00$H)$p.value,
+        pvalWS = t.test(ljeto99$WS, ljeto00$WS)$p.value,
+        pvalWD = t.test(ljeto99$WD, ljeto00$WD)$p.value,
+        pvalNS = t.test(ljeto99$NS, ljeto00$NS)$p.value,
+        pvalEW = t.test(ljeto99$EW, ljeto00$EW)$p.value
+    )
+)
+cat("p-vrijednosti t-testa\n")
+cat("--------\n")
+print(format(ttest, digit=2))
+cat("======================================\n\n")
+
+for (i in names(ttest)) {
+    for (j in 1:nrow(ttest[i])) {
+        if (ttest[[i]][j] < 0.05) {
+            cat("[",i,"]: Postoji signifikantna razlika izmedu 1999 i 2000 za ", names(vrijeme1)[j+1] ,"\n")
+            cat("======================================\n\n")
+        }
+    }
+}
 
